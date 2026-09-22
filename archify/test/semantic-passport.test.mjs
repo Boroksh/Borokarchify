@@ -91,7 +91,7 @@ test('Node Finder searches and presents the same passport facts', () => {
   assert.match(html, /var sublabel = node\.getAttribute\('data-node-sublabel'\) \|\| ''/);
   assert.match(html, /var context = node\.getAttribute\('data-node-context'\) \|\| ''/);
   assert.match(html, /var tag = node\.getAttribute\('data-node-tag'\) \|\| ''/);
-  assert.match(html, /search: \(id \+ ' ' \+ label \+ ' ' \+ type \+ ' ' \+ sublabel \+ ' ' \+ context \+ ' ' \+ tag \+ ' ' \+ sourceSearch \+ ' ' \+ text\)\.toLowerCase\(\)/);
+  assert.match(html, /search: \(id \+ ' ' \+ label \+ ' ' \+ type \+ ' ' \+ sublabel \+ ' ' \+ description \+ ' ' \+ contractSearch \+ ' ' \+ context \+ ' ' \+ tag \+ ' ' \+ sourceSearch \+ ' ' \+ text\)\.toLowerCase\(\)/);
   assert.match(html, /\[viewerKindLabel\(item\.type\), item\.id, item\.sublabel, item\.tag\]\.filter\(Boolean\)\.join\(' \\u00b7 '\)/);
   assert.match(html, /meta\.title = \[viewerKindLabel\(item\.type\), item\.id, item\.context, item\.sublabel, item\.tag\]\.filter\(Boolean\)\.join\(' \\u00b7 '\)/);
 });

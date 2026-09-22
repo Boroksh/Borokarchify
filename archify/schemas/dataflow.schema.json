@@ -132,6 +132,21 @@
           "sublabel": {
             "type": "string"
           },
+            "description": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            },
+            "sources": { "$ref": "common.schema.json#/$defs/sourceReferences" },
+            "inputs": { "$ref": "common.schema.json#/$defs/semanticFacts" },
+            "outputs": { "$ref": "common.schema.json#/$defs/semanticFacts" },
+            "errors": { "$ref": "common.schema.json#/$defs/semanticFacts" },
+            "detail_href": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2048,
+            "pattern": "^(?:(?:https?://|/|\\./|\\.\\./|#)\\S*|[^:/?#\\s][^:\\s]*)$"
+          },
           "tag": {
             "type": "string"
           },

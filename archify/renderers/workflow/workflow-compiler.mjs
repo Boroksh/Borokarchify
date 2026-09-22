@@ -1,5 +1,5 @@
 import { esc, renderDefinitions, renderSemanticSigil, textUnits } from '../shared/utils.mjs';
-import { animateAttr, focusEdgeAttrs, focusNodeAttrs, focusNodeTitle, svgAccessibleText, svgRootAttrs } from '../shared/cli.mjs';
+import { animateAttr, focusEdgeAttrs, focusNodeAttrs, focusNodeTitle, renderNodeDetailLink, svgAccessibleText, svgRootAttrs } from '../shared/cli.mjs';
 import {
   throwDiagnosticError,
   throwDiagnosticProblems,
@@ -4202,13 +4202,14 @@ function renderNode(node) {
     ? `\n        <text data-detail="fine" x="${node.cx}" y="${node.y + node.height - 12}" class="${accent}" font-size="${fittedNodeFontSize(node.tag, node.width, nodeTextFit.tagPreferred, nodeTextFit.tagMinimum)}" text-anchor="middle">${esc(node.tag)}</text>`
     : '';
   const brand = renderBrandMark(node, { x: node.x + node.width - 22, y: node.y + 6 });
-  const passport = { kind: node.type, sublabel: node.sublabel, tag: node.tag, context: nodeContext(node), ...brandMetadataFor(node) };
+  const detailLink = renderNodeDetailLink(node.detail_href, node.label, { x: node.x + node.width - 21, y: node.y + node.height - 21 }, workflow.meta.locale);
+  const passport = { kind: node.type, sublabel: node.sublabel, description: node.description, sources: node.sources, inputs: node.inputs, outputs: node.outputs, errors: node.errors, detailHref: node.detail_href, tag: node.tag, context: nodeContext(node), ...brandMetadataFor(node) };
   return `        <g ${focusNodeAttrs(node.id, node.label, passport, workflow.meta.locale)}>
           ${focusNodeTitle(node.label, passport)}
           <rect x="${node.x}" y="${node.y}" width="${node.width}" height="${node.height}" rx="6" class="c-mask"/>
           <rect x="${node.x}" y="${node.y}" width="${node.width}" height="${node.height}" rx="6" class="${fill}"${animateAttr(workflow.meta, 'node', nodeStep(node))} stroke-width="1.5"/>
           ${renderSemanticSigil(node.type, { x: node.x + 6, y: node.y + 6 })}${brand ? `\n          ${brand}` : ''}
-          <text data-node-label=""${hasSub ? ' data-detail-anchor=""' : ''} x="${node.cx}" y="${node.y + 21}" class="t-primary" font-size="${labelFontSize}" font-weight="600" text-anchor="middle">${esc(node.label)}</text>${sub}${tag}
+          <text data-node-label=""${hasSub ? ' data-detail-anchor=""' : ''} x="${node.cx}" y="${node.y + 21}" class="t-primary" font-size="${labelFontSize}" font-weight="600" text-anchor="middle">${esc(node.label)}</text>${sub}${tag}${detailLink}
         </g>`;
 }
 

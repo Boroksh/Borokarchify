@@ -978,6 +978,21 @@ function renderConnectionLabel(conn, index) {
         </g>`;
 }
 
+function renderComponentDetailLink(c) {
+  if (!c.detail_href) return '';
+  const x = c.x + c.width - 21;
+  const y = c.y + c.height - 21;
+  const aria = i18nText(arch.meta.locale, 'node.detail.open', { label: c.label });
+  return `
+          <a class="node-detail-link" data-node-detail-link="" href="${esc(c.detail_href)}" aria-label="${esc(aria)}">
+            <rect x="${x}" y="${y}" width="16" height="16" rx="4"/>
+            <g transform="translate(${x} ${y})" aria-hidden="true">
+              <path d="M2.4 8s2.1-3.2 5.6-3.2S13.6 8 13.6 8 11.5 11.2 8 11.2 2.4 8 2.4 8Z"/>
+              <circle cx="8" cy="8" r="1.7"/>
+            </g>
+          </a>`;
+}
+
 function renderComponent(c) {
   const fill = componentFill[c.type] || 'c-external';
   const accent = componentText[c.type] || 't-muted';
@@ -992,13 +1007,25 @@ function renderComponent(c) {
     : '';
   const brand = renderBrandMark(c, { x: c.x + c.width - 22, y: c.y + 6 });
   const labelFontSize = fittedNodeFontSize(c.label, brandLabelFitWidth(c, c.width), 11, 8);
-  const passport = { kind: c.type, sublabel: c.sublabel, tag: c.tag, context: componentContext(c), ...brandMetadataFor(c) };
+  const passport = {
+    kind: c.type,
+    sublabel: c.sublabel,
+    description: c.description,
+    sources: c.sources,
+    inputs: c.inputs,
+    outputs: c.outputs,
+    errors: c.errors,
+    detailHref: c.detail_href,
+    tag: c.tag,
+    context: componentContext(c),
+    ...brandMetadataFor(c),
+  };
   return `        <g ${focusNodeAttrs(c.id, c.label, passport, arch.meta.locale)}>
           ${focusNodeTitle(c.label, passport)}
           <rect x="${c.x}" y="${c.y}" width="${c.width}" height="${c.height}" rx="6" class="c-mask"/>
           <rect x="${c.x}" y="${c.y}" width="${c.width}" height="${c.height}" rx="6" class="${fill}"${animateAttr(arch.meta, 'node', componentSteps.get(c.id))} stroke-width="1.5"/>
           ${renderSemanticSigil(c.type, { x: c.x + 6, y: c.y + 6 })}${brand ? `\n          ${brand}` : ''}
-          <text data-node-label=""${hasSub ? ' data-detail-anchor=""' : ''} x="${cx}" y="${labelY}" class="t-primary" font-size="${labelFontSize}" font-weight="600" text-anchor="middle">${esc(c.label)}</text>${sub}${tag}
+          <text data-node-label=""${hasSub ? ' data-detail-anchor=""' : ''} x="${cx}" y="${labelY}" class="t-primary" font-size="${labelFontSize}" font-weight="600" text-anchor="middle">${esc(c.label)}</text>${sub}${tag}${renderComponentDetailLink(c)}
         </g>`;
 }
 

@@ -145,6 +145,56 @@ a time.
 
 Run `validate` after every edit. Consume `diagnostics[]` by stable `code`, exact `subject`, measured `evidence`, and `supportedFixes`. If the diagnostic gives `labelAt`, use that point instead of estimating another offset.
 
+## Semantic details
+
+Every semantic item should include a concise `description` of its responsibility: architecture `components`, workflow and data-flow `nodes`, sequence `participants`, and lifecycle `states`. Keep `label` and `sublabel` compact enough for the canvas; the longer description is presented on demand in the Semantic Passport.
+
+The same items may carry an evidence-backed operational contract:
+
+- `sources`: one to three objects with repository-relative `path`, optional `line`, `end_line`, and `label`.
+- `inputs`: one to twelve short strings naming consumed values, events, commands, or preconditions.
+- `outputs`: one to twelve short strings naming returned values, emitted events, persisted changes, or other effects.
+- `errors`: one to twelve short strings naming observable failure outcomes, not speculative implementation risks.
+
+These fields describe the selected item, not its neighboring edge labels. Omit a field when the repository or user-provided evidence does not establish it. Do not write generic placeholders such as “request”, “response”, or “error” when a more exact contract is known. Architecture retains its fail-closed rule: component `sources` require `meta.repository` and successful `--repo-root` verification. In workflow, sequence, data-flow, and lifecycle diagrams, sources are authored references rather than verified links.
+
+Any semantic item may add `detail_href` only for a real relative path, root-relative path, fragment, or HTTP(S) URL. When present, the item renders an eye control that opens that destination without replacing the normal focus interaction.
+
+## Layered diagram families
+
+Use layered diagrams when a component needs more detail than its parent can show legibly. The parent remains the overview; each child explains one selected parent item at exactly one lower abstraction level. Choose the child type from its content: component structure uses `architecture`, operational logic uses `workflow`, calls use `sequence`, data movement uses `dataflow`, and state behavior uses `lifecycle`. Inspect the relevant code, configuration, tests, and existing diagram sources before authoring a code-backed child. Do not infer internals solely from the parent label or a previous chat.
+
+Keep the whole family under one root directory. Put the overview in its own directory and create one sibling directory per detailed item. Each directory contains the typed JSON source and delivered HTML. Paths in `detail_href` should normally be relative to the parent HTML so the family remains portable. Before delivery, resolve every local `detail_href` from the parent HTML's directory and verify that its target exists. Moving a diagram requires updating its incoming links and the family index.
+
+For every multi-layer family, maintain `diagram-index.json` at the family root with this stable minimal shape:
+
+```json
+{
+  "schema_version": 1,
+  "root": "overview/system.html",
+  "diagrams": [
+    {
+      "id": "system",
+      "type": "architecture",
+      "spec": "overview/system.architecture.json",
+      "html": "overview/system.html"
+    },
+    {
+      "id": "execution-coordinator",
+      "parent": "system",
+      "parent_item": "worker",
+      "type": "workflow",
+      "spec": "execution-coordinator/execution-coordinator.workflow.json",
+      "html": "execution-coordinator/execution-coordinator.html"
+    }
+  ]
+}
+```
+
+Use stable diagram IDs. `root`, `spec`, and `html` are family-root-relative paths. Every non-root entry must name the parent diagram and the exact semantic item whose `detail_href` reaches it. The index records navigation; it does not duplicate node or edge facts. When opening an existing family in a new chat, read this index first, then inspect only the selected diagram and the repository evidence needed for the requested layer.
+
+Avoid duplicating the same abstraction level in parent and child. A child may link to another verified lower-level diagram recursively, but create that next layer only when requested or when the current deliverable explicitly requires it. External systems and shared infrastructure can remain contextual nodes without receiving their own child unless they are in scope.
+
 ## Mode placement
 
 ### Architecture

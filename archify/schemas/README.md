@@ -107,6 +107,15 @@ unpinned network capture. Unsafe, unavailable, changed, or unsupported content
 fails closed with a brand diagnostic. Omitted `brand` preserves the prior
 output.
 
+Every semantic node collection also accepts an optional `description` of 1 to
+500 characters. Renderers expose it through `data-node-description`, and the
+standalone viewer presents it on demand in the Semantic Passport.
+
+Every semantic node collection also accepts an optional safe `detail_href`.
+When it points to a real detailed diagram or supporting page, the standalone
+viewer renders a native eye control without replacing the node's normal focus
+interaction. Relative links keep a layered diagram family portable.
+
 ## schema_version policy
 
 Workflow supports schema versions 1 and 2. Version 1 remains the fixed-layout
@@ -163,10 +172,16 @@ express cleanly here: duplicate view IDs, duplicate focus IDs, focus IDs that do
 not exist in the diagram's semantic collection, and duplicate authored
 relationship IDs within the mode's relationship collection.
 
+Every semantic item in all five modes may carry an authored contract: one to
+three `sources` with repo-relative POSIX paths, optional line ranges, and
+optional labels; plus `inputs`, `outputs`, and `errors` lists of one to twelve
+concise facts. These fields appear on demand in the Semantic Passport and remain
+optional so unknown facts are omitted rather than invented.
+
 Architecture additionally supports opt-in, revision-pinned repository evidence.
-`meta.repository` names a public GitHub URL and full commit SHA; a component may
-carry one to three `sources` with repo-relative POSIX paths, optional line
-ranges, and optional labels. Shape is schema-checked, then the renderer requires
+`meta.repository` names a public GitHub URL and full commit SHA. When repository
+metadata and component `sources` are both present, shape is schema-checked and
+the renderer requires
 `--repo-root`: the local Git origin must match, and Git must prove the commit,
 blobs, and requested lines. Verified evidence is embedded outside the canonical
 SVG for the Semantic Passport and Node Finder; ordinary documents and visual

@@ -1,7 +1,7 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { esc, renderDefinitions, renderSemanticSigil, textUnits } from '../shared/utils.mjs';
-import { animateAttr, focusEdgeAttrs, focusNodeAttrs, focusNodeTitle, loadDiagramWithBrandMarks, writeDiagram, svgAccessibleText, svgRootAttrs } from '../shared/cli.mjs';
+import { animateAttr, focusEdgeAttrs, focusNodeAttrs, focusNodeTitle, loadDiagramWithBrandMarks, renderNodeDetailLink, writeDiagram, svgAccessibleText, svgRootAttrs } from '../shared/cli.mjs';
 import { throwDiagnosticProblems } from '../shared/diagnostics.mjs';
 import { resolveLegend, renderLegend as renderResolvedLegend } from '../shared/legend.mjs';
 import { availableNodeTextWidth, fittedNodeFontSize, minimumNodeTextWidth } from '../shared/text-fit.mjs';
@@ -444,10 +444,17 @@ function renderState(state) {
     ? `\n        <text data-detail="fine" x="${state.x + (hasBrand ? 23 : 10)}" y="${state.y + 14}" class="${accent}" font-size="7" font-weight="700">${esc(state.step)}</text>`
     : '';
   const brand = renderBrandMark(state, { x: state.x + state.width - 22, y: state.y + 6 });
+  const detailLink = renderNodeDetailLink(state.detail_href, state.label, { x: state.x + state.width - 21, y: state.y + state.height - 21 }, lifecycle.meta.locale);
   const labelFontSize = fittedNodeFontSize(state.label, brandLabelFitWidth(state, state.width), 10, 8);
   const passport = {
     kind: state.type,
     sublabel: state.sublabel,
+    description: state.description,
+    sources: state.sources,
+    inputs: state.inputs,
+    outputs: state.outputs,
+    errors: state.errors,
+    detailHref: state.detail_href,
     tag: state.tag,
     context: laneLabels.get(state.lane) || i18nText(lifecycle.meta.locale, 'node.context.lifecycle'),
     ...brandMetadataFor(state),
@@ -457,7 +464,7 @@ function renderState(state) {
           <rect x="${state.x}" y="${state.y}" width="${state.width}" height="${state.height}" rx="7" class="c-mask"/>
           <rect x="${state.x}" y="${state.y}" width="${state.width}" height="${state.height}" rx="7" class="${fill}"${animateAttr(lifecycle.meta, 'node', stateSteps.get(state.id))} stroke-width="1.5"/>
           ${renderSemanticSigil(state.type, { x: hasBrand ? state.x + 6 : state.x + state.width - 17, y: state.y + 6 })}${brand ? `\n          ${brand}` : ''}${step}
-          <text data-node-label=""${hasSub ? ' data-detail-anchor=""' : ''} x="${state.cx}" y="${state.y + 21}" class="t-primary" font-size="${labelFontSize}" font-weight="600" text-anchor="middle">${esc(state.label)}</text>${sub}${tag}
+          <text data-node-label=""${hasSub ? ' data-detail-anchor=""' : ''} x="${state.cx}" y="${state.y + 21}" class="t-primary" font-size="${labelFontSize}" font-weight="600" text-anchor="middle">${esc(state.label)}</text>${sub}${tag}${detailLink}
         </g>`;
 }
 

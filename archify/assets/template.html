@@ -1857,6 +1857,14 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       white-space: nowrap;
     }
     .semantic-passport-detail[hidden] { display: none; }
+    .semantic-passport-description {
+      display: block;
+      margin: 0.42rem 0 0;
+      color: var(--text-muted);
+      font-size: 0.625rem;
+      line-height: 1.55;
+    }
+    .semantic-passport-description[hidden] { display: none; }
     .semantic-passport-meta {
       display: flex;
       flex-wrap: wrap;
@@ -1893,6 +1901,47 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
     .semantic-passport-meta [hidden] { display: none; }
     html[data-preset="blueprint"] .semantic-passport-meta span,
     html[data-preset="blueprint"] .semantic-passport-meta code { border-radius: 0.1rem; }
+    .semantic-passport-contract {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.3rem;
+      margin-top: 0.52rem;
+    }
+    .semantic-passport-contract[hidden],
+    .semantic-passport-contract-group[hidden] { display: none; }
+    .semantic-passport-contract-group {
+      min-width: 0;
+      padding: 0.42rem 0.46rem;
+      border: 1px solid color-mix(in srgb, var(--toolbar-border) 82%, transparent);
+      border-radius: 0.45rem;
+      background: color-mix(in srgb, var(--panel) 70%, transparent);
+    }
+    html[data-preset="blueprint"] .semantic-passport-contract-group { border-radius: 0.14rem; }
+    .semantic-passport-contract-group strong {
+      display: block;
+      margin-bottom: 0.22rem;
+      color: var(--text-faint);
+      font-size: 0.5rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .semantic-passport-contract-group ul {
+      display: grid;
+      gap: 0.18rem;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+    .semantic-passport-contract-group li {
+      overflow-wrap: anywhere;
+      color: var(--text-muted);
+      font-size: 0.5625rem;
+      line-height: 1.4;
+    }
+    .semantic-passport-contract-group li::before { content: '• '; color: var(--cloud-stroke); }
+    .semantic-passport-contract-group[data-contract="outputs"] li::before { color: var(--backend-stroke); }
+    .semantic-passport-contract-group[data-contract="errors"] li::before { color: var(--security-stroke); }
     .semantic-passport-evidence {
       margin-top: 0.52rem;
       padding: 0.5rem;
@@ -4203,6 +4252,33 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       filter: drop-shadow(0 0 7px var(--frontend-stroke));
       outline: none;
     }
+    .node-detail-link {
+      cursor: pointer;
+      outline: none;
+    }
+    .node-detail-link rect {
+      fill: color-mix(in srgb, var(--mask) 92%, var(--backend-stroke));
+      stroke: color-mix(in srgb, var(--backend-stroke) 82%, var(--panel-border));
+      stroke-width: 1;
+      vector-effect: non-scaling-stroke;
+    }
+    .node-detail-link path,
+    .node-detail-link circle {
+      fill: none;
+      stroke: var(--backend-stroke);
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-width: 1.25;
+      vector-effect: non-scaling-stroke;
+    }
+    .node-detail-link:hover rect,
+    .node-detail-link:focus-visible rect {
+      fill: var(--backend-fill);
+      stroke-width: 1.5;
+    }
+    .node-detail-link:focus-visible {
+      filter: drop-shadow(0 0 4px color-mix(in srgb, var(--backend-stroke) 72%, transparent));
+    }
     /* Verified Source Beacons are installed at runtime only for nodes whose
        repository evidence passed the local revision/blob/line checks. They
        live inside the owning node so every focus, route, story, and guided
@@ -5358,12 +5434,27 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
             <span class="relationship-lens-eyebrow">{{i18n:viewer.passport.eyebrow}}</span>
             <strong class="relationship-lens-title" id="relationship-lens-title"><span id="focus-label"></span></strong>
             <span class="semantic-passport-detail" id="focus-detail" hidden></span>
+            <p class="semantic-passport-description" id="focus-description" hidden></p>
             <div class="semantic-passport-meta" id="focus-passport-meta" aria-label="{{i18n:viewer.passport.metadata}}">
               <span id="focus-kind" data-passport="kind"></span>
               <span id="focus-context" data-passport="context" hidden></span>
               <span id="focus-tag" data-passport="tag" hidden></span>
               <span id="focus-brand" data-passport="brand" hidden></span>
               <code id="focus-id" data-passport="id"></code>
+            </div>
+            <div class="semantic-passport-contract" id="focus-contract" hidden aria-label="{{i18n:viewer.passport.contract}}">
+              <section class="semantic-passport-contract-group" id="focus-sources-group" data-contract="sources" hidden>
+                <strong>{{i18n:viewer.passport.sources}}</strong><ul id="focus-sources"></ul>
+              </section>
+              <section class="semantic-passport-contract-group" id="focus-inputs-group" data-contract="inputs" hidden>
+                <strong>{{i18n:viewer.passport.inputs}}</strong><ul id="focus-inputs"></ul>
+              </section>
+              <section class="semantic-passport-contract-group" id="focus-outputs-group" data-contract="outputs" hidden>
+                <strong>{{i18n:viewer.passport.outputs}}</strong><ul id="focus-outputs"></ul>
+              </section>
+              <section class="semantic-passport-contract-group" id="focus-errors-group" data-contract="errors" hidden>
+                <strong>{{i18n:viewer.passport.errors}}</strong><ul id="focus-errors"></ul>
+              </section>
             </div>
             <div class="semantic-passport-evidence" id="focus-evidence" hidden aria-label="{{i18n:viewer.passport.evidence}}">
               <div class="semantic-passport-evidence-head">
@@ -7543,6 +7634,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       var context = document.getElementById('focus-context');
       var tag = document.getElementById('focus-tag');
       var semanticId = document.getElementById('focus-id');
+      var contract = document.getElementById('focus-contract');
       var evidence = document.getElementById('focus-evidence');
       var repositoryLink = document.getElementById('focus-repository');
       var evidenceLinks = document.getElementById('focus-evidence-links');
@@ -7860,6 +7952,41 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         element.textContent = normalized;
         element.hidden = !normalized;
       }
+      function parsePassportList(node, attribute) {
+        var authored = node.getAttribute(attribute);
+        if (!authored) return [];
+        try {
+          var parsed = JSON.parse(authored);
+          return Array.isArray(parsed) ? parsed : [];
+        } catch (_) {
+          return [];
+        }
+      }
+      function renderContractGroup(name, values) {
+        var group = document.getElementById('focus-' + name + '-group');
+        var list = document.getElementById('focus-' + name);
+        list.textContent = '';
+        values.forEach(function (value) {
+          var item = document.createElement('li');
+          if (name === 'sources' && value && typeof value === 'object') {
+            var sourceLabel = value.label ? value.label + ' — ' : '';
+            var line = value.line ? ':' + value.line + (value.end_line && value.end_line !== value.line ? '-' + value.end_line : '') : '';
+            item.textContent = sourceLabel + value.path + line;
+          } else {
+            item.textContent = String(value);
+          }
+          list.appendChild(item);
+        });
+        group.hidden = values.length === 0;
+        return values.length > 0;
+      }
+      function renderSemanticContract(node) {
+        var visible = false;
+        ['sources', 'inputs', 'outputs', 'errors'].forEach(function (name) {
+          visible = renderContractGroup(name, parsePassportList(node, 'data-node-' + name)) || visible;
+        });
+        contract.hidden = !visible;
+      }
       function renderSourceEvidence(id) {
         evidenceLinks.textContent = '';
         repositoryLink.removeAttribute('href');
@@ -7904,12 +8031,14 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       }
       function renderPassport(id, node) {
         setPassportValue(detail, node.getAttribute('data-node-sublabel'));
+        setPassportValue(document.getElementById('focus-description'), node.getAttribute('data-node-description'));
         setPassportValue(kind, viewerKindLabel(node.getAttribute('data-node-kind') || 'node'));
         setPassportValue(context, node.getAttribute('data-node-context'));
         setPassportValue(tag, node.getAttribute('data-node-tag'));
         setPassportValue(document.getElementById('focus-brand'), node.getAttribute('data-node-brand'));
         semanticId.textContent = id;
         semanticId.hidden = false;
+        renderSemanticContract(node);
         renderSourceEvidence(id);
       }
       function relationshipsFor(id, byId) {
@@ -8662,6 +8791,11 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         tag.hidden = true;
         semanticId.textContent = '';
         semanticId.hidden = true;
+        contract.hidden = true;
+        ['sources', 'inputs', 'outputs', 'errors'].forEach(function (name) {
+          document.getElementById('focus-' + name).textContent = '';
+          document.getElementById('focus-' + name + '-group').hidden = true;
+        });
         evidence.hidden = true;
         evidenceLinks.textContent = '';
         repositoryLink.removeAttribute('href');
@@ -8803,6 +8937,10 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
 
       svg.addEventListener('click', function (event) {
         if (container.getAttribute('data-just-panned') === 'true') return;
+        if (event.target.closest('[data-node-detail-link]')) {
+          event.stopPropagation();
+          return;
+        }
         var node = event.target.closest('[data-node-id]');
         if (node) {
           var id = node.getAttribute('data-node-id');
@@ -8814,6 +8952,15 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         else if (activeIds.length) clear();
       });
       svg.addEventListener('keydown', function (event) {
+        var detailLink = event.target.closest('[data-node-detail-link]');
+        if (detailLink && (event.key === 'Enter' || event.key === ' ')) {
+          event.stopPropagation();
+          if (event.key === ' ') {
+            event.preventDefault();
+            window.location.assign(detailLink.getAttribute('href'));
+          }
+          return;
+        }
         var node = event.target.closest('[data-node-id]');
         if (!node || (event.key !== 'Enter' && event.key !== ' ')) return;
         event.preventDefault();
@@ -12715,6 +12862,10 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         var label = node.getAttribute('data-node-label') || (node.getAttribute('aria-label') || id).replace(/^Focus\s+/, '');
         var text = (node.textContent || '').replace(/\s+/g, ' ').trim();
         var sublabel = node.getAttribute('data-node-sublabel') || '';
+        var description = node.getAttribute('data-node-description') || '';
+        var contractSearch = ['sources', 'inputs', 'outputs', 'errors'].map(function (name) {
+          return node.getAttribute('data-node-' + name) || '';
+        }).join(' ');
         var context = node.getAttribute('data-node-context') || '';
         var tag = node.getAttribute('data-node-tag') || '';
         var brand = node.getAttribute('data-node-brand') || '';
@@ -12728,12 +12879,13 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
           label: label,
           type: type,
           sublabel: sublabel,
+          description: description,
           context: context,
           tag: tag,
           brand: brand,
           sources: sources,
           links: connectionsFor(id),
-          search: (id + ' ' + label + ' ' + type + ' ' + sublabel + ' ' + context + ' ' + tag + ' ' + sourceSearch + ' ' + text).toLowerCase() + ' ' + brand.toLowerCase(),
+          search: (id + ' ' + label + ' ' + type + ' ' + sublabel + ' ' + description + ' ' + contractSearch + ' ' + context + ' ' + tag + ' ' + sourceSearch + ' ' + text).toLowerCase() + ' ' + brand.toLowerCase(),
           node: node
         };
       });

@@ -179,9 +179,16 @@ export function animateAttr(meta, kind, step) {
 // the schema's conservative identifier pattern; escape again at the markup
 // boundary so these helpers remain safe if that contract expands later.
 export function focusNodeAttrs(id, label, metadata = {}, locale) {
+  const encodedList = (value) => Array.isArray(value) && value.length ? JSON.stringify(value) : undefined;
   const optional = [
     ['data-node-kind', metadata.kind],
     ['data-node-sublabel', metadata.sublabel],
+    ['data-node-description', metadata.description],
+    ['data-node-sources', encodedList(metadata.sources)],
+    ['data-node-inputs', encodedList(metadata.inputs)],
+    ['data-node-outputs', encodedList(metadata.outputs)],
+    ['data-node-errors', encodedList(metadata.errors)],
+    ['data-node-detail-href', metadata.detailHref],
     ['data-node-tag', metadata.tag],
     ['data-node-context', metadata.context],
     ['data-node-brand', metadata.brand],
@@ -206,6 +213,19 @@ export function focusNodeTitle(label, metadata = {}) {
   const parts = [label, metadata.sublabel, metadata.context, metadata.tag, metadata.brand]
     .filter((value) => value !== undefined && value !== null && String(value).trim() !== '');
   return `<title>${esc(parts.join(' · '))}</title>`;
+}
+
+export function renderNodeDetailLink(href, label, { x, y }, locale) {
+  if (!href) return '';
+  const aria = translateMessage(locale, 'node.detail.open', { label });
+  return `
+          <a class="node-detail-link" data-node-detail-link="" href="${esc(href)}" aria-label="${esc(aria)}">
+            <rect x="${x}" y="${y}" width="16" height="16" rx="4"/>
+            <g transform="translate(${x} ${y})" aria-hidden="true">
+              <path d="M2.4 8s2.1-3.2 5.6-3.2S13.6 8 13.6 8 11.5 11.2 8 11.2 2.4 8 2.4 8Z"/>
+              <circle cx="8" cy="8" r="1.7"/>
+            </g>
+          </a>`;
 }
 
 export function focusEdgeAttrs(from, to, label, key, id) {

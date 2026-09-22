@@ -55,7 +55,21 @@
     { "id": "approval", "lane": "policy", "col": 3, "type": "security", "label": "Approval Gate", "sublabel": "scope + consent", "tag": "block risky ops", "width": 132 },
     { "id": "blocked", "lane": "policy", "col": 4, "type": "security", "label": "Blocked", "sublabel": "wait or reject", "width": 132 },
     { "id": "retry", "lane": "policy", "col": 5, "type": "messagebus", "label": "Retry Path", "sublabel": "revise request", "width": 132 },
-    { "id": "tool", "lane": "tools", "col": 4, "type": "messagebus", "label": "Tool Call", "sublabel": "shell / browser / MCP", "tag": "structured result", "width": 132 },
+    {
+      "id": "tool",
+      "lane": "tools",
+      "col": 4,
+      "type": "messagebus",
+      "label": "Tool Call",
+      "sublabel": "shell / browser / MCP",
+      "description": "Executes the selected capability and returns a structured observation to the agent runtime.",
+      "sources": [{ "path": "renderers/workflow/workflow-compiler.mjs", "label": "Workflow compiler" }],
+      "inputs": ["validated tool name and arguments", "execution context"],
+      "outputs": ["structured tool result", "trace evidence"],
+      "errors": ["tool unavailable", "execution rejected", "execution timeout"],
+      "tag": "structured result",
+      "width": 132
+    },
     { "id": "external", "lane": "tools", "col": 5, "type": "cloud", "label": "External API", "sublabel": "network service", "width": 132 },
     { "id": "store", "lane": "tools", "col": 1, "type": "database", "label": "Context Store", "sublabel": "repo + memory", "width": 132 },
     { "id": "trace", "lane": "tools", "col": 2, "type": "database", "label": "Trace Log", "sublabel": "events + output", "width": 132 }

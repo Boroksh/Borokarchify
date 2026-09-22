@@ -94,24 +94,19 @@
           "type": { "$ref": "common.schema.json#/$defs/componentType" },
           "label": { "type": "string", "minLength": 1 },
           "sublabel": { "type": "string" },
+          "description": { "type": "string", "minLength": 1, "maxLength": 500 },
+          "detail_href": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2048,
+            "pattern": "^(?:(?:https?://|/|\\./|\\.\\./|#)\\S*|[^:/?#\\s][^:\\s]*)$"
+          },
           "tag": { "type": "string" },
           "brand": { "$ref": "common.schema.json#/$defs/brandMark" },
-          "sources": {
-            "type": "array",
-            "minItems": 1,
-            "maxItems": 3,
-            "items": {
-              "type": "object",
-              "additionalProperties": false,
-              "required": ["path"],
-              "properties": {
-                "path": { "type": "string", "minLength": 1, "maxLength": 240 },
-                "line": { "type": "integer", "minimum": 1 },
-                "end_line": { "type": "integer", "minimum": 1 },
-                "label": { "type": "string", "minLength": 1, "maxLength": 48 }
-              }
-            }
-          },
+          "sources": { "$ref": "common.schema.json#/$defs/sourceReferences" },
+          "inputs": { "$ref": "common.schema.json#/$defs/semanticFacts" },
+          "outputs": { "$ref": "common.schema.json#/$defs/semanticFacts" },
+          "errors": { "$ref": "common.schema.json#/$defs/semanticFacts" },
           "row": { "type": "integer", "minimum": 0 },
           "col": { "type": "integer", "minimum": 0 },
           "pos": { "$ref": "common.schema.json#/$defs/point" },

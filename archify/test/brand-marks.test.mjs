@@ -672,7 +672,7 @@ test('viewer exposes brand identity to Passport and Finder while keeping source 
   assert.match(template, /id="focus-brand" data-passport="brand" hidden/);
   assert.match(template, /node\.getAttribute\('data-node-brand'\)/);
   assert.match(template, /brandOffset = node\.hasAttribute\('data-node-brand'\) \? 24 : 0/);
-  assert.match(template, /sourceSearch \+ ' ' \+ text\)\.toLowerCase\(\) \+ ' ' \+ brand\.toLowerCase\(\)/);
+  assert.match(template, /contractSearch \+ ' ' \+ context[\s\S]*?sourceSearch \+ ' ' \+ text\)\.toLowerCase\(\) \+ ' ' \+ brand\.toLowerCase\(\)/);
 });
 
 process.on('exit', () => fs.rmSync(tmp, { recursive: true, force: true }));

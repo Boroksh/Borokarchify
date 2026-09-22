@@ -68,6 +68,19 @@ test('architecture compare classifies authored facts separately from geometry an
   assert.deepEqual(boundaryReceipt.changes.boundaries.find((change) => change.label === 'Fraud edge').classifications, ['scope']);
 });
 
+test('component descriptions and detail destinations are semantic architecture changes', () => {
+  const base = read(baseFixture);
+  const head = structuredClone(base);
+  head.components[0].description = 'Coordinates checkout requests and validates the active session.';
+  head.components[0].detail_href = './checkout/request-lifecycle.html';
+
+  const receipt = compareArchitecture(base, head);
+  const change = receipt.changes.components.find((component) => component.id === head.components[0].id);
+  assert.equal(change.status, 'changed');
+  assert.deepEqual(change.classifications, ['semantic']);
+  assert.deepEqual(change.changedFields, ['/description', '/detail_href']);
+});
+
 test('legend-only changes are presentation changes and never topology changes', () => {
   const base = read(baseFixture);
   const head = read(baseFixture);
